@@ -67,6 +67,7 @@ feature_importance = pd.DataFrame({
 st.sidebar.title("💤 수면장애 분석")
 menu = st.sidebar.selectbox("탭 선택", ["Home", "데이터 분석", "데이터 시각화", "머신러닝 보고서"])
 
+
 # Home
 if menu == "Home":
     st.title("Sleep Disorder 분석 대시보드")
@@ -75,20 +76,19 @@ if menu == "Home":
     - **타겟 컬럼** : Sleep Disorders (0: 없음, 1: 있음)
     """, unsafe_allow_html=True)
 
+    st.subheader("Health Sleep Statistics")
+    st.dataframe(df.head(10))
+
 # 데이터 분석
 elif menu == "데이터 분석":
     st.title("데이터 분석")
-    tab1, tab2, tab3 = st.tabs(["상위 10개", "기술 통계", "조건 검색"])
+    tab1, tab2 = st.tabs(["기술 통계", "조건 검색"])
     
     with tab1:
-        st.subheader("데이터 샘플")
-        st.dataframe(df.head(10))
-
-    with tab2:
         st.subheader("통계 요약")
         st.dataframe(df.describe())
 
-    with tab3:
+    with tab2:
         st.subheader("조건별 필터")
         column = st.selectbox("컬럼 선택", df.columns)
         value = st.selectbox("값 선택", df[column].unique())
@@ -138,12 +138,22 @@ elif menu == "머신러닝 보고서":
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Confusion Matrix")
-        fig6, ax6 = plt.subplots()
-        sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", ax=ax6)
+        fig6, ax6 = plt.subplots(figsize=(2.5, 1.5))
+
+        # heatmap 그리기
+        sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", ax=ax6, annot_kws={"size": 6})  # 셀 내 글자 크기 설정
+
+        # 축 레이블과 숫자 크기 설정
+        ax6.tick_params(axis='both', labelsize=5)  # x축과 y축 레이블 글자 크기 6
+
+        # 색상 막대 글자 크기 설정
+        colorbar = ax6.collections[0].colorbar  # 색상 막대 객체 가져오기
+        colorbar.ax.tick_params(labelsize=5)  # 색상 막대 글자 크기 설정
+
         st.pyplot(fig6)
 
     with col2:
         st.subheader("특성 중요도")
-        fig6, ax6 = plt.subplots(figsize=(3, 2))
+        fig6, ax6 = plt.subplots(figsize=(5, 4))
         sns.barplot(x="Importance", y="Feature", data=feature_importance, ax=ax6)
         st.pyplot(fig6)
